@@ -1,10 +1,11 @@
 import { existsSync, mkdirSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
 import { normalizeBusId } from "./bus-utils";
 import { getSampleBuses } from "./sample-data";
 
-const dbDir = path.join(process.cwd(), "data");
+const dbDir = process.env.VERCEL ? path.join(os.tmpdir(), "aitam-bus-app-data") : path.join(process.cwd(), "data");
 const dbPath = path.join(dbDir, "aitam.db");
 
 let database: any = null;
