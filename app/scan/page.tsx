@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Search, TicketCheck } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
@@ -31,25 +31,30 @@ export default function ScanPage() {
     }
   }, [router]);
 
-  const lookupBus = async (value: string) => {
+  const lookupBus = useCallback(async (value: string) => {
+    const normalizedValue = (value ?? "").trim().toUpperCase();
     setLoading(true);
     try {
-      const response = await fetch(`/api/buses?busId=${encodeURIComponent(value)}`);
+      const response = await fetch(`/api/buses?busId=${encodeURIComponent(normalizedValue)}`);
       const payload = await response.json();
       setBus(payload);
-      setScanValue(value);
+      setScanValue(normalizedValue);
       setMessage("");
       if (!payload) {
         toast.error("Bus not found");
       } else {
-        toast.success(`Bus ${value} loaded`);
+        toast.success(`Bus ${normalizedValue} loaded`);
       }
     } catch {
       toast.error("Unable to load bus details");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const handleScanResult = useCallback((value: string) => {
+    void lookupBus(value);
+  }, [lookupBus]);
 
   const handleAction = async (action: "in" | "out") => {
     if (!bus) return;
@@ -85,7 +90,7 @@ export default function ScanPage() {
             <Search className="h-5 w-5" />
             <p className="font-semibold">Scan or search a bus by QR code</p>
           </div>
-          <QRScanner onScanResult={(value) => lookupBus(value)} />
+          <QRScanner onScanResult={handleScanResult} />
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <input
               type="text"
