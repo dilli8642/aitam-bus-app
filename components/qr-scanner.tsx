@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Html5Qrcode } from "html5-qrcode";
 import { Camera, ScanLine } from "lucide-react";
 
 interface QRScannerProps {
@@ -9,8 +8,8 @@ interface QRScannerProps {
 }
 
 export function QRScanner({ onScanResult }: QRScannerProps) {
-  const scannerId = useRef(`scanner-${Math.random().toString(36).slice(2)}`);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerId = useRef("aitam-qr-scanner");
+  const scannerRef = useRef<any>(null);
   const [status, setStatus] = useState("Preparing camera...");
 
   useEffect(() => {
@@ -18,6 +17,7 @@ export function QRScanner({ onScanResult }: QRScannerProps) {
 
     const startScanner = async () => {
       try {
+        const { Html5Qrcode } = await import("html5-qrcode");
         const scanner = new Html5Qrcode(scannerId.current);
         scannerRef.current = scanner;
         await scanner.start(
@@ -31,7 +31,8 @@ export function QRScanner({ onScanResult }: QRScannerProps) {
           () => undefined,
         );
         setStatus("Camera ready. Point the phone at the QR code.");
-      } catch {
+      } catch (error) {
+        console.error("QR scanner failed to start:", error);
         setStatus("Camera access was blocked or unavailable.");
       }
     };
@@ -39,8 +40,8 @@ export function QRScanner({ onScanResult }: QRScannerProps) {
     startScanner();
 
     return () => {
-      scannerRef.current?.stop().catch(() => undefined);
-      scannerRef.current?.clear();
+      scannerRef.current?.stop?.().catch(() => undefined);
+      scannerRef.current?.clear?.();
     };
   }, [onScanResult]);
 

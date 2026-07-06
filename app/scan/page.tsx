@@ -86,6 +86,22 @@ export default function ScanPage() {
             <p className="font-semibold">Scan or search a bus by QR code</p>
           </div>
           <QRScanner onScanResult={(value) => lookupBus(value)} />
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <input
+              type="text"
+              value={scanValue}
+              onChange={(event) => setScanValue(event.target.value.toUpperCase())}
+              placeholder="Enter bus number manually (e.g., BUS001)"
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+            />
+            <button
+              type="button"
+              onClick={() => lookupBus(scanValue)}
+              className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+            >
+              Load Bus
+            </button>
+          </div>
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
